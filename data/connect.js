@@ -92,7 +92,10 @@ function commitFan(value) {
 
 function connect() {
   const host = window.location.hostname || '192.168.4.1';
-  ws = new WebSocket('ws://' + host + '/ws');
+  const gateway = window.location.port === '8080' ? 
+  ('ws://' + host + ':8081') : 
+  ('ws://' + host + '/ws');
+  ws = new WebSocket(gateway);
 
   ws.onopen = function () {
     if (reconnectTimer) {
@@ -174,3 +177,4 @@ presetButtons.forEach(function (button) {
 });
 
 connect();
+ 

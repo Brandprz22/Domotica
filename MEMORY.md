@@ -2,23 +2,26 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
 ## Estado actual
-- Firmware base en ESP32 configurado con SoftAP (`Rick_Lab_AP`) y LittleFS montado.
-- WebSocket `/ws` funcional para sincronización bidireccional en tiempo real.
-- Hito: control funcional de 2 LEDs independientes (GPIO 16 y GPIO 17), broadcast `{"lights":{"led1":0/1,"led2":0/1}}`.
-- Frontend mínimo en `/data` con barra superior, estado WS y dos tarjetas (LED 1 y LED 2).
+- Firmware ESP32 con SoftAP (`Rick_Lab_AP`), LittleFS y WebSocket `/ws`.
+- Hito: integración de LM35, LDR, servomotor SG90 y motorreductor PWM, conservando el control de iluminación.
+- Pines: LED 1 manual GPIO 17, LED 2 automático GPIO 16, servo GPIO 13, motor PWM GPIO 18 (LEDC 2), dirección GPIO 19, LM35 GPIO 34, LDR GPIO 35.
+- Telemetría plana cada 1 s: `{"temp","ldr","led1","led2","fan","servo"}`.
 
 ## Decisiones (y por qué)
-- **Descarte de LabVIEW:** El ESP32 es autónomo; la interfaz web por WebSockets resuelve la telemetría, gráficas y control móvil sin depender de software pesado en la PC.
-- **Frontend nativo sin frameworks:** HTML/CSS/JS puros para mantener el peso total por debajo de 40 KB, logrando carga inmediata sobre la Flash del microcontrolador.
-- **Sin CDNs:** Todo icono o estilo es local/SVG nativo porque la maqueta opera en una red Wi-Fi escolar sin conexión a internet.
-- **Tema claro inicial con variables `:root`:** Facilita la presentación académica con colores institucionales ESCOM y permite cambiar a tema oscuro invirtiendo los valores en CSS.
-- **Comando toggle mínimo:** `{ action: "toggle", target: "led1|led2" }`; el firmware también acepta claves `toggle`, `zone`, `led` y `name` para tolerancia.
+- **LM35 a 5 V:** su rango recomendado es 4–30 V; la salida máxima (1.5 V a 150 °C) es segura para el ADC de 3.3 V.
+- **LDR a 3.3 V con pull-down de 10 kΩ:** oscuridad = ADC bajo (<800) = LED 2 encendido. Evita sobrevoltaje en GPIO 35.
+- **ADC1 (GPIO 34/35):** no colisiona con el Wi-Fi; se usa atenuación 11 dB y 12 bits.
+- **Timer LEDC 0 reservado para el servo:** `ESP32PWM::allocateTimer(0)` evita que ESP32Servo compita con el motor, que usa el canal 2 (timer 1) a 1 kHz.
+- **Motor con arranque asistido:** 0 % = duty 0; 1–100 % se mapea a 75–255 para vencer la inercia del motor 130.
+- **Servo sin slider:** solo botones 0°/90°/180° e indicador numérico, para diferenciarlo del control PWM del motor.
+- **Frontend nativo sin frameworks ni CDNs:** mantiene el peso de `/data` bajo 40 KB y funciona en red local aislada.
 
 ## Aprendizajes y errores a evitar
-- Los navegadores móviles desactivan o desvían el tráfico local de `192.168.4.1` si los datos móviles (4G/5G) están encendidos.
-- No guardar archivos de documentación o notas en `/data`, ya que `uploadfs` empaqueta todo a la Flash y reduce el espacio disponible.
-- Usar siempre `AudioContext` nativo para alertas audibles en lugar de cargar archivos `.mp3` pesados en LittleFS.
+- Alimentar servo y motor desde fuente externa con GND común; no usar el regulador del DevKit.
+- Los navegadores móviles pueden desviar el tráfico local de `192.168.4.1` si los datos móviles están activos.
+- No guardar documentación en `/data`: `uploadfs` empaqueta todo en LittleFS.
+- El umbral LDR estricto en 800 puede parpadear cerca del límite; si ocurre, añadir histéresis.
 
 ## Próximos pasos
-- Subir a Flash con `uploadfs` y validar encendido/apagado desde el celular.
-- Mantener el frontend sin sensores, simulaciones ni módulos adicionales.
+- Subir firmware y filesystem, y validar LEDs, LDR, motor, servo y telemetría desde el celular.
+- Mantener el alcance mínimo: sin módulos ni sensores adicionales no solicitados.

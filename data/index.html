@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Iluminación</title>
+  <meta name="theme-color" content="#003366">
+  <title>Panel de Control</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
-    <h1 class="topbar__title">Control de Iluminación</h1>
+    <h1 class="topbar__title">Panel de Control</h1>
     <div class="status" id="wsStatus" aria-live="polite">
       <span class="status__dot" id="wsDot"></span>
       <span class="status__text" id="wsText">Desconectado</span>
@@ -16,19 +17,57 @@
   </header>
 
   <main class="container">
-    <section class="cards">
-      <article class="card" data-led="led1">
-        <h2 class="card__title">LED 1</h2>
-        <div class="indicator" id="led1Indicator" aria-label="Estado LED 1"></div>
-        <p class="state" id="led1State">Apagado</p>
-        <button class="btn" id="led1Btn" type="button" aria-pressed="false">Conmutar</button>
+    <section class="cards" aria-label="Controles de la maqueta">
+      <article class="card">
+        <h2 class="card__title">Monitoreo ambiental</h2>
+        <div class="stats">
+          <div class="stat">
+            <p class="stat__value"><span id="tempValue">--</span><span class="stat__unit">°C</span></p>
+            <p class="stat__label">Temperatura</p>
+          </div>
+          <div class="stat">
+            <p class="stat__value"><span id="ldrValue">--</span></p>
+            <p class="stat__label">Luz (LDR)</p>
+          </div>
+        </div>
       </article>
 
-      <article class="card" data-led="led2">
-        <h2 class="card__title">LED 2</h2>
-        <div class="indicator" id="led2Indicator" aria-label="Estado LED 2"></div>
-        <p class="state" id="led2State">Apagado</p>
-        <button class="btn" id="led2Btn" type="button" aria-pressed="false">Conmutar</button>
+      <article class="card">
+        <h2 class="card__title">Iluminación</h2>
+        <div class="device">
+          <span class="indicator indicator--sm" id="led1Indicator" aria-hidden="true"></span>
+          <div class="device__info">
+            <span class="device__name">LED 1</span>
+            <span class="device__state" id="led1State">Apagado</span>
+          </div>
+          <button class="btn btn--compact" id="led1Btn" type="button" aria-pressed="false">Conmutar</button>
+        </div>
+        <div class="device">
+          <span class="indicator indicator--sm" id="led2Indicator" aria-hidden="true"></span>
+          <div class="device__info">
+            <span class="device__name">LED 2</span>
+            <span class="device__state" id="led2State">Apagado</span>
+          </div>
+          <span class="device__mode">Automático LDR</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">Ventilación</h2>
+        <p class="readout"><output id="fanValue" for="fanSlider">0</output><span class="readout__unit">%</span></p>
+        <label class="slider-label" for="fanSlider">Potencia del motor</label>
+        <input class="slider" type="range" id="fanSlider" min="0" max="100" step="1" value="0">
+        <div class="slider-scale" aria-hidden="true"><span>0</span><span>100</span></div>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">Servomotor SG90</h2>
+        <p class="readout"><output id="servoValue">90</output><span class="readout__unit">°</span></p>
+        <div class="presets" role="group" aria-label="Ángulos del servomotor">
+          <button class="btn btn--preset" type="button" data-angle="0" aria-pressed="false">0°</button>
+          <button class="btn btn--preset" type="button" data-angle="90" aria-pressed="true">90°</button>
+          <button class="btn btn--preset" type="button" data-angle="180" aria-pressed="false">180°</button>
+        </div>
       </article>
     </section>
   </main>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Iluminación</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="topbar__title">Control de Iluminación</h1>
+    <div class="status" id="wsStatus" aria-live="polite">
+      <span class="status__dot" id="wsDot"></span>
+      <span class="status__text" id="wsText">Desconectado</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cards">
+      <article class="card" data-led="led1">
+        <h2 class="card__title">LED 1</h2>
+        <div class="indicator" id="led1Indicator" aria-label="Estado LED 1"></div>
+        <p class="state" id="led1State">Apagado</p>
+        <button class="btn" id="led1Btn" type="button" aria-pressed="false">Conmutar</button>
+      </article>
+
+      <article class="card" data-led="led2">
+        <h2 class="card__title">LED 2</h2>
+        <div class="indicator" id="led2Indicator" aria-label="Estado LED 2"></div>
+        <p class="state" id="led2State">Apagado</p>
+        <button class="btn" id="led2Btn" type="button" aria-pressed="false">Conmutar</button>
+      </article>
+    </section>
+  </main>
+
+  <script src="connect.js"></script>
+</body>
+</html>

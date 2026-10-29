@@ -4,73 +4,169 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#003366">
-  <title>Panel de Control</title>
+  <meta name="color-scheme" content="light">
+  <title>Casa C-137 · Panel de control</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1 class="topbar__title">Panel de Control</h1>
-    <div class="status" id="wsStatus" aria-live="polite">
-      <span class="status__dot" id="wsDot"></span>
-      <span class="status__text" id="wsText">Desconectado</span>
+  <header class="masthead">
+    <div class="masthead__inner">
+      <div>
+        <h1 class="masthead__title">Casa C-137</h1>
+        <p class="masthead__subtitle">Monitoreo y control en vivo</p>
+      </div>
+      <p class="status" id="wsStatus" aria-live="polite">
+        <span class="status__dot" aria-hidden="true"></span>
+        <span id="wsText">Conectando…</span>
+      </p>
     </div>
   </header>
 
-  <main class="container">
-    <section class="cards" aria-label="Controles de la maqueta">
+  <main class="board">
+    <section class="grid" aria-label="Panel de la maqueta">
+
+      <!-- 1 · Monitoreo ambiental -->
       <article class="card">
         <h2 class="card__title">Monitoreo ambiental</h2>
-        <div class="stats">
-          <div class="stat">
-            <p class="stat__value"><span id="tempValue">--</span><span class="stat__unit">°C</span></p>
-            <p class="stat__label">Temperatura</p>
+        <div class="env">
+          <div class="env__cell">
+            <p class="kpi"><span class="kpi__value" id="tempValue">--</span><span class="kpi__unit">°C</span></p>
+            <p class="kpi__label">Temperatura</p>
+            <p class="note">LM35 · 10 mV por grado</p>
           </div>
-          <div class="stat">
-            <p class="stat__value"><span id="ldrValue">--</span></p>
-            <p class="stat__label">Luz (LDR)</p>
+          <div class="env__cell env__cell--light">
+            <p class="kpi"><span class="kpi__value" id="ldrValue">--</span></p>
+            <p class="kpi__label">Luz (LDR)</p>
+            <div class="bar" aria-hidden="true">
+              <span class="bar__fill" id="ldrBar"></span>
+              <span class="bar__mark"></span>
+            </div>
+            <p class="note">Cuentas ADC · LED 2 enciende bajo 800</p>
           </div>
         </div>
       </article>
 
+      <!-- 2 · Iluminación -->
       <article class="card">
         <h2 class="card__title">Iluminación</h2>
+
         <div class="device">
-          <span class="indicator indicator--sm" id="led1Indicator" aria-hidden="true"></span>
-          <div class="device__info">
-            <span class="device__name">LED 1</span>
-            <span class="device__state" id="led1State">Apagado</span>
+          <span class="lamp" id="led1Lamp" aria-hidden="true"></span>
+          <div class="device__text">
+            <p class="device__name" id="led1Name">LED 1</p>
+            <p class="device__state" id="led1State">Apagado</p>
           </div>
-          <button class="btn btn--compact" id="led1Btn" type="button" aria-pressed="false">Conmutar</button>
+          <label class="switch">
+            <input class="switch__input" type="checkbox" id="led1Switch" role="switch" aria-labelledby="led1Name">
+            <span class="switch__track" aria-hidden="true"></span>
+          </label>
         </div>
+
         <div class="device">
-          <span class="indicator indicator--sm" id="led2Indicator" aria-hidden="true"></span>
-          <div class="device__info">
-            <span class="device__name">LED 2</span>
-            <span class="device__state" id="led2State">Apagado</span>
+          <span class="lamp" id="led2Lamp" aria-hidden="true"></span>
+          <div class="device__text">
+            <p class="device__name">LED 2</p>
+            <p class="device__state" id="led2State">Apagado</p>
           </div>
-          <span class="device__mode">Automático LDR</span>
+          <span class="badge">Automático</span>
         </div>
       </article>
 
+      <!-- 3 · Climatización -->
       <article class="card">
-        <h2 class="card__title">Ventilación</h2>
+        <h2 class="card__title">Climatización</h2>
+
         <p class="readout"><output id="fanValue" for="fanSlider">0</output><span class="readout__unit">%</span></p>
-        <label class="slider-label" for="fanSlider">Potencia del motor</label>
+        <label class="field-label" for="fanSlider">Potencia del ventilador</label>
         <input class="slider" type="range" id="fanSlider" min="0" max="100" step="1" value="0">
-        <div class="slider-scale" aria-hidden="true"><span>0</span><span>100</span></div>
-      </article>
+        <div class="scale" aria-hidden="true"><span>0 %</span><span>100 %</span></div>
 
-      <article class="card">
-        <h2 class="card__title">Parasol</h2>
-        <p class="readout"><output id="servoValue">90</output><span class="readout__unit">°</span></p>
-        <div class="presets" role="group" aria-label="Ángulos del servomotor">
-          <button class="btn btn--preset" type="button" data-angle="0" aria-pressed="false">0°</button>
-          <button class="btn btn--preset" type="button" data-angle="90" aria-pressed="true">90°</button>
-          <button class="btn btn--preset" type="button" data-angle="180" aria-pressed="false">180°</button>
+        <div class="setpoint">
+          <div class="setpoint__text">
+            <p class="field-label field-label--start" id="setpointLabel">Temperatura objetivo</p>
+            <p class="note">Arranque automático al 50 % · apaga 1 °C abajo</p>
+          </div>
+          <div class="stepper" role="group" aria-labelledby="setpointLabel">
+            <button class="stepper__btn" type="button" id="spDown" aria-label="Bajar temperatura objetivo">−</button>
+            <p class="stepper__value"><output id="setpointValue">26.0</output><span class="stepper__unit">°C</span></p>
+            <button class="stepper__btn" type="button" id="spUp" aria-label="Subir temperatura objetivo">+</button>
+          </div>
         </div>
       </article>
+
+      <!-- 4 · Parasol -->
+      <article class="card card--parasol">
+        <h2 class="card__title">Parasol</h2>
+
+        <div class="parasol">
+          <p class="parasol__state" id="parasolState">Cerrado</p>
+          <p class="parasol__angle"><output id="parasolAngle">0</output>° de 180°</p>
+          <span class="badge">Automático</span>
+        </div>
+
+        <div class="device device--flush">
+          <div class="device__text">
+            <p class="device__name" id="parasolName">Control manual</p>
+            <p class="device__state" id="parasolHint">Se libera con luz intermedia</p>
+          </div>
+          <label class="switch">
+            <input class="switch__input" type="checkbox" id="parasolSwitch" role="switch" aria-labelledby="parasolName">
+            <span class="switch__track" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <p class="note">Abre con sol directo (más de 2500) y cierra en sombra (menos de 1200).</p>
+      </article>
+
+      <!-- 5 · Seguridad: gas -->
+      <article class="card">
+        <h2 class="card__title">Seguridad · gas (MQ-2)</h2>
+
+        <p class="kpi"><span class="kpi__value" id="gasValue">--</span><span class="kpi__unit">cuentas</span></p>
+        <div class="bar" aria-hidden="true">
+          <span class="bar__fill" id="gasBar"></span>
+          <span class="bar__mark bar__mark--gas"></span>
+        </div>
+        <p class="state-badge">
+          <span class="state-badge__safe">Ambiente seguro</span>
+          <span class="state-badge__alert">¡Alerta de gas!</span>
+        </p>
+        <p class="note">Alerta por encima de 1500 · se despeja bajo 1300</p>
+
+        <div class="banner" id="gasBanner" role="alert" hidden>
+          <strong class="banner__title">Gas o humo detectado</strong>
+          <span class="banner__text">Ventila el área y revisa el sensor. La lectura debe bajar de 1300 para despejar.</span>
+        </div>
+      </article>
+
+      <!-- 6 · Bebé -->
+      <article class="card" id="babyCard">
+        <h2 class="card__title">Monitor acústico · bebé</h2>
+
+        <p class="kpi"><output class="kpi__value" id="soundValue">--</output></p>
+        <p class="kpi__label">Nivel de sonido</p>
+        <div class="meter" id="soundMeter" role="meter" aria-label="Nivel de sonido" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="meter__fill"></span>
+          <span class="meter__mark" aria-hidden="true"></span>
+        </div>
+        <div class="scale" aria-hidden="true"><span>Silencio</span><span>Llanto</span></div>
+        <p class="note">Umbral: 5 pulsos por ventana de 100 ms · alerta tras 3 s</p>
+
+        <div class="banner banner--row" id="babyBanner" role="alert" hidden>
+          <span class="banner__body">
+            <strong class="banner__title">Llanto detectado</strong>
+            <span class="banner__text">La alerta queda activa hasta que la descartes.</span>
+          </span>
+          <button class="btn btn--danger" type="button" id="babyClear">Descartar</button>
+        </div>
+      </article>
+
     </section>
   </main>
+
+  <footer class="foot">
+    <p>Maqueta didáctica · funciona en red local, sin internet</p>
+  </footer>
 
   <script src="connect.js"></script>
 </body>
